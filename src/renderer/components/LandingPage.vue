@@ -1,44 +1,85 @@
 <template>
-  <div id="wrapper">
-    <table border="1">
+  <div id="wrapper" align="center">
+    <table border="1" align="center">
       <tr>
-        <td>序号</td><td>姓名</td>
+        <td>序号</td><td>姓名</td><td>操作</td>
       </tr >
         <tr v-for="item in this.userTable">
           <td>{{item.id}}</td><td>{{item.username}}</td>
+          <td>
+            <button @click="handleDel(item.id)">删除</button>
+            <button @click="handleUpdate(item.id)">更改</button>
+          </td>
         </tr>
     </table>
-    <div style="padding-top: 100px;border: red 1px solid;cursor: pointer" >
-      <a @click="addUser" style="cursor: pointer">添加新用户</a>
+    <div style="padding-top: 100px;cursor: pointer" >
+      <button @click="addUser">添加新用户</button>
     </div>
   </div>
 </template>
 
 <script>
   import SystemInformation from './LandingPage/SystemInformation'
-  import  user from  '../model/user'
   export default {
     name: 'landing-page',
     components: {SystemInformation},
     data () {
       return {
-        userTable:[]
+        userTable:[],
+        user: this.$sequelize.model('user')
       }
     },
     methods: {
       open(link) {
         require('electron').shell.openExternal(link)
       },
+      // 增
       async addUser(){
-        let user = this.$sequelize.model('user');
-        await user.create({
-          username:'zhangyong'
+        let _this = this
+       /* let user = this.$sequelize.model('user');*/
+        await  this.user.create({
+          username:'wangerxiao'
+        }).then(function (result) {
+          console.log("插入成功"+result);
+          _this.init()
+        }).catch(function (err) {
+          console.log("插入失败"+err);
         })
+      },
+      // 删
+      async handleDel(id) {
+        let _this = this
+      /*  let user = this.$sequelize.model('user');*/
+        this.user.destroy({where:{id:id}}).then(function (result) {
+          _this.init()
+          console.log("delete success：" +result)
+        }).catch(function (err) {
+          console.log("delete fail："+ err)
+        })
+      },
+      async handleUpdate(id) {
+        let _this = this
+        this.user.findOne({where: {id:id}}).then(
+          function (user) {
+            user.update({
+              username:'wudalang'
+            }).then(function (result) {
+              console.log("update success：" +result)
+              _this.init()
+            }).catch(function (err) {
+              console.log("update fail："+ err)
+            })
+          }).catch(function (err) {
+          console.log("无此用户")
+        })
+      },
+      async init(){
+        this.userTable = await this.user.findAll()
       }
+
     },
-    async mounted() {
-      let user = this.$sequelize.model('user');
-      this.userTable = await user.findAll()
+    mounted() {
+      this.init()
     }
   }
 </script>
