@@ -1,20 +1,16 @@
 <template>
   <div id="wrapper">
-    <button style="color: red"></button>
-      <table>
+    <table border="1">
       <tr>
-        <td>1</td><td>1</td>
-        <td>2</td><td>2</td>
-        <td>3</td><td>3</td>
-        <td>4</td><td>4</td>
-        <td>5</td><td>5</td>
-      </tr>
+        <td>序号</td><td>姓名</td>
+      </tr >
+        <tr v-for="item in this.userTable">
+          <td>{{item.id}}</td><td>{{item.username}}</td>
+        </tr>
     </table>
-
-    <div>
-
+    <div style="padding-top: 100px;border: red 1px solid;cursor: pointer" >
+      <a @click="addUser" style="cursor: pointer">添加新用户</a>
     </div>
-
   </div>
 </template>
 
@@ -24,17 +20,25 @@
   export default {
     name: 'landing-page',
     components: {SystemInformation},
+    data () {
+      return {
+        userTable:[]
+      }
+    },
     methods: {
       open(link) {
         require('electron').shell.openExternal(link)
       },
+      async addUser(){
+        let user = this.$sequelize.model('user');
+        await user.create({
+          username:'zhangyong'
+        })
+      }
     },
-    mounted() {
-      console.log(this.$sequelize.model('user'))
-      this.$sequelize.query('select * from user').spread(function (results, metadata) {
-        // Raw query - use spread
-        console.log(results)
-      });
+    async mounted() {
+      let user = this.$sequelize.model('user');
+      this.userTable = await user.findAll()
     }
   }
 </script>

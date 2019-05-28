@@ -3,16 +3,20 @@ const Sequelize = require('sequelize');
 
 let user = sequelize.define('user',{
     id:{
-        type:Sequelize.STRING(50),
-        primaryKey:true
+        default:0,
+        type:Sequelize.INTEGER,
+        primaryKey:true,
+        autoIncrement:true
     },
     username:{
         type: Sequelize.STRING(50),
-        filed: 'user_name'
+        filed: 'username'
     }
 
 },{
-    // Model 对应的表名将与model名相同
-    freezeTableName:true
+    timestamps: false,  //去除createAt updateAt
+    freezeTableName: true,  //使用自定义表名
+    // 实例对应的表名
+    tableName: 'user'
 })
 

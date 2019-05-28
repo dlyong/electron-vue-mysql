@@ -22,7 +22,6 @@ function createWindow () {
     useContentSize: true,
     width: 1000
   })
-
   mainWindow.loadURL(winURL)
 
   mainWindow.on('closed', () => {
